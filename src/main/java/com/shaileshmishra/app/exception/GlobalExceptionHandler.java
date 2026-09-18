@@ -39,4 +39,18 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.BAD_REQUEST)
                                 .body(errorBody);
         }
+
+        @ExceptionHandler(EmployeeAlreadyExistsException.class)
+        public ResponseEntity<Map<String, Object>> handleEmployeeAlreadyExists(
+                        EmployeeAlreadyExistsException ex) {
+
+                Map<String, Object> errorBody = Map.of(
+                                "error_message", "Employee already exists.",
+                                "error_code", 409,
+                                "errors", Map.of("name", List.of(ex.getMessage())));
+
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(errorBody);
+        }
 }

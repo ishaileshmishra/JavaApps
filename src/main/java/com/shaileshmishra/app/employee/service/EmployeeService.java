@@ -10,6 +10,7 @@ import com.shaileshmishra.app.employee.dto.EmployeeResponseDTO;
 import com.shaileshmishra.app.employee.models.Employee;
 import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.employee.util.EmployeeIdGenerator;
+import com.shaileshmishra.app.exception.EmployeeAlreadyExistsException;
 import com.shaileshmishra.app.exception.EmployeeNotFoundException;
 
 @Service
@@ -28,8 +29,7 @@ public class EmployeeService {
     public Employee getEmployeeById(String empId) {
         return employeeRepository.findByEmpIdAndDeletedAtIsNull(empId)
                 .orElseThrow(() -> new EmployeeNotFoundException(
-                    "Employee not found with empId: " + empId
-                ));
+               "Employee not found with empId: " + empId));
     }
 
     public List<EmployeeResponseDTO> getEmployees() {
@@ -39,9 +39,17 @@ public class EmployeeService {
     }
 
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
+        if (employeeRepository.existsByNameAndDeletedAtIsNull(request.getName())) {
+            throw new EmployeeAlreadyExistsException(
+                    "Employee with name '" + request.getName() + "' already exists.");
+        }
         var currentTimestamp = UtcTimestamp.now();
         var employee = new Employee(request.getName(), request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
+        // var found = employeeRepository.existsByNameAndDeletedAtIsNull(request.getName());
+        // if (found) {
+        //     throw new IllegalArgumentException("Employee with same name already exists.");
+        // }
         return toResponse(employeeRepository.save(employee));
     }
 

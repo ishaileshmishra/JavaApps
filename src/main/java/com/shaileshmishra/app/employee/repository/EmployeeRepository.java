@@ -11,4 +11,6 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Optional<Employee> findByEmpIdAndDeletedAtIsNull(String empId);
 
     List<Employee> findByDeletedAtIsNull();
+
+    boolean existsByNameAndDeletedAtIsNull(String name);
 }
