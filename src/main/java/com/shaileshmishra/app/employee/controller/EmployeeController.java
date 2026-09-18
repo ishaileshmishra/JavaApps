@@ -1,6 +1,7 @@
 package com.shaileshmishra.app.employee.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{empId}")
-    public ResponseEntity<String> deleteEmployee(
+    public ResponseEntity<Map<String, Object>> deleteEmployee(
             @PathVariable String empId) {
         var response = this.employeeService.deleteEmployee(empId);
         return ResponseEntity.ok(response);

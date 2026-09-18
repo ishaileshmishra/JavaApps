@@ -1,6 +1,7 @@
 package com.shaileshmishra.app.employee.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -70,11 +71,19 @@ public class EmployeeService {
                 employee.getSalary());
     }
 
-    public String deleteEmployee(String empId) {
+    public Map<String, Object> deleteEmployee(String empId) {
         Employee employee = getEmployeeById(empId);
         employee.setDeletedAt(UtcTimestamp.now());
+        if (employee.getDeletedAt() == null) {
+            throw new RuntimeException("Failed to delete employee with empId: " + empId);
+        }
+        try {
+            employeeRepository.save(employee);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete employee with empId: " + empId, e);
+        }
         employeeRepository.save(employee);
-        return "Employee with empId: " + empId + " has been deleted successfully.";
+        return Map.of("message", "Employee with empId: " + empId + " has been deleted successfully.");
     }
 
 }
