@@ -13,9 +13,9 @@ public class EmployeeEventConsumer {
     @KafkaListener(topics = "employee-events", groupId = "employee-service-group")
     public void handleEvent(EmployeeEvent event) {
         switch (event.getEventType()) {
-            case "CREATED" -> log.info("📥 New employee created: {} ({})",
+            case "CREATED" -> log.info("📥 Consumer New employee created: {} ({})",
                     event.getName(), event.getEmpId());
-            case "DELETED" -> log.info("🗑️ Employee deleted: {} ({})",
+            case "DELETED" -> log.info("🗑️ Consumer Employee deleted: {} ({})",
                     event.getName(), event.getEmpId());
             default -> log.warn("Unknown event type: {}", event.getEventType());
         }

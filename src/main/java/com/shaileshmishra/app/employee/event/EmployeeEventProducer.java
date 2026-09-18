@@ -3,7 +3,9 @@ package com.shaileshmishra.app.employee.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmployeeEventProducer {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeEventProducer.class);
