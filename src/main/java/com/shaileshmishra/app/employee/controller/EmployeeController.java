@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import com.shaileshmishra.app.employee.dto.EmployeeRequestDTO;
 import com.shaileshmishra.app.employee.dto.EmployeeResponseDTO;
-import com.shaileshmishra.app.employee.models.Employee;
 import com.shaileshmishra.app.employee.service.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -36,10 +35,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/{empId}")
-    public ResponseEntity<Employee> getEmployee(
+    public ResponseEntity<EmployeeResponseDTO> getEmployee(
             @PathVariable String empId) {
         var currentEmp = this.employeeService.getEmployeeById(empId);
-        return ResponseEntity.ok(currentEmp);
+        return ResponseEntity.ok(new EmployeeResponseDTO(
+                currentEmp.getName(),
+                currentEmp.getDesignation(),
+                currentEmp.getEmpId(),
+                currentEmp.getSalary()));
     }
 
     @PostMapping

@@ -3,7 +3,6 @@ package com.shaileshmishra.app.employee.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.shaileshmishra.app.common.util.UtcTimestamp;
 import com.shaileshmishra.app.employee.dto.EmployeeRequestDTO;
@@ -13,17 +12,12 @@ import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.employee.util.EmployeeIdGenerator;
 import com.shaileshmishra.app.exception.EmployeeNotFoundException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
     public EmployeeService(EmployeeRepository employeeRepository) {
-        logger.info("EmployeeService is working");
         this.employeeRepository = employeeRepository;
     }
 
@@ -32,32 +26,23 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(String empId) {
-        return employeeRepository.findByEmpId(empId)
+        return employeeRepository.findByEmpIdAndDeletedAtIsNull(empId)
                 .orElseThrow(() -> new EmployeeNotFoundException(
                     "Employee not found with empId: " + empId
                 ));
     }
 
     public List<EmployeeResponseDTO> getEmployees() {
-        return employeeRepository.findAll().stream().map(
-                emp -> new EmployeeResponseDTO(emp.getName(), emp.getDesignation(), emp.getEmpId(), emp.getSalary()))
+        return employeeRepository.findByDeletedAtIsNull().stream().map(
+                this::toResponse)
                 .toList();
     }
 
-    public EmployeeResponseDTO createEmployee(@RequestBody EmployeeRequestDTO request) {
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         var currentTimestamp = UtcTimestamp.now();
         var employee = new Employee(request.getName(), request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
-        try {
-            employeeRepository.save(employee);
-        } catch (Exception e) {
-            logger.error("Error occurred while storing employee: " + request.getName(), e.getMessage());
-            throw new EmployeeNotFoundException(
-                    "Error occurred while saving employee: " + request.getName()
-                );
-        }
-        return new EmployeeResponseDTO(employee.getName(), employee.getDesignation(),
-                employee.getEmpId(), employee.getSalary());
+        return toResponse(employeeRepository.save(employee));
     }
 
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO request) {

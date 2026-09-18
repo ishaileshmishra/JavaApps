@@ -1,8 +1,7 @@
 package com.shaileshmishra.app.employee.dto;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 public class EmployeeRequestDTO {
 
@@ -12,20 +11,16 @@ public class EmployeeRequestDTO {
     @NotBlank
     private String designation;
 
-    @Positive 
-    private double salary;
+    @Positive
+    private BigDecimal salary;
 
-    @DateTimeFormat 
-    private String createdAt;
+    public EmployeeRequestDTO() {
+    }
 
-    public EmployeeRequestDTO(String name, String designation, double salary) {
+    public EmployeeRequestDTO(String name, String designation, BigDecimal salary) {
         this.name = name;
         this.designation = designation;
         this.salary = salary;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
     }
 
     public String getName() {
@@ -36,9 +31,19 @@ public class EmployeeRequestDTO {
         return designation;
     }
 
-    public double getSalary() {
+    public BigDecimal getSalary() {
         return salary;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
+    }
 }

@@ -1,13 +1,15 @@
 package com.shaileshmishra.app.employee.dto;
 
+import java.math.BigDecimal;
+
 public class EmployeeResponseDTO {
 
     private String name;
     private String designation;
     private String empId;
-    private double salary;
+    private BigDecimal salary;
 
-    public EmployeeResponseDTO(String name, String designation, String empId, double salary) {
+    public EmployeeResponseDTO(String name, String designation, String empId, BigDecimal salary) {
         this.name = name;
         this.designation = designation;
         this.empId = empId;
@@ -38,11 +40,11 @@ public class EmployeeResponseDTO {
         this.empId = empId;
     }
 
-    public double getSalary() {
+    public BigDecimal getSalary() {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(BigDecimal salary) {
         this.salary = salary;
     }
 }

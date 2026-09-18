@@ -3,6 +3,7 @@ package com.shaileshmishra.app.employee.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.math.BigDecimal;
 
 @Document(collection = "employees")
 public class Employee {
@@ -12,13 +13,13 @@ public class Employee {
     private String designation;
     @Indexed(unique = true)
     private String empId;
-    private double salary;
+    private BigDecimal salary;
     private String internalCode;
     private String createdAt;
     private String updatedAt;
     private String deletedAt;
 
-    public Employee(String name, String designation, String empId, double salary, String createdAt, String updatedAt) {
+    public Employee(String name, String designation, String empId, BigDecimal salary, String createdAt, String updatedAt) {
         this.name = name;
         this.designation = designation;
         this.empId = empId;
@@ -53,13 +54,12 @@ public class Employee {
         this.empId = empId;
     }
 
-    public double getSalary() {
+    public BigDecimal getSalary() {
         return salary;
     }
 
-    public double setSalary(double salary) {
+    public void setSalary(BigDecimal salary) {
         this.salary = salary;
-        return salary;
     }
 
     public String getInternalCode() {
