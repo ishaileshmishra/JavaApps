@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.shaileshmishra.app.common.util.UtcTimestamp;
 import com.shaileshmishra.app.employee.dto.EmployeeRequestDTO;
 import com.shaileshmishra.app.employee.dto.EmployeeResponseDTO;
+import com.shaileshmishra.app.employee.event.EmployeeEvent;
+import com.shaileshmishra.app.employee.event.EmployeeEventProducer;
 import com.shaileshmishra.app.employee.models.Employee;
 import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.employee.util.EmployeeIdGenerator;
@@ -18,9 +20,11 @@ import com.shaileshmishra.app.exception.EmployeeNotFoundException;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final EmployeeEventProducer eventProducer; // ← inject
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, EmployeeEventProducer eventProducer) {
         this.employeeRepository = employeeRepository;
+        this.eventProducer = eventProducer;
     }
 
     public String ping() {
@@ -30,7 +34,7 @@ public class EmployeeService {
     public Employee getEmployeeById(String empId) {
         return employeeRepository.findByEmpIdAndDeletedAtIsNull(empId)
                 .orElseThrow(() -> new EmployeeNotFoundException(
-               "Employee not found with empId: " + empId));
+                        "Employee not found with empId: " + empId));
     }
 
     public List<EmployeeResponseDTO> getEmployees() {
@@ -47,10 +51,13 @@ public class EmployeeService {
         var currentTimestamp = UtcTimestamp.now();
         var employee = new Employee(request.getName(), request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
-        // var found = employeeRepository.existsByNameAndDeletedAtIsNull(request.getName());
-        // if (found) {
-        //     throw new IllegalArgumentException("Employee with same name already exists.");
-        // }
+
+        // 🔔 Publish event after successful save
+        eventProducer.publishCreateEvent(new EmployeeEvent(
+                "CREATED", employee.getEmpId(), employee.getName(),
+                employee.getDesignation(), employee.getSalary(),
+                UtcTimestamp.now()));
+        // save the employee and return the response
         return toResponse(employeeRepository.save(employee));
     }
 
@@ -83,6 +90,11 @@ public class EmployeeService {
             throw new RuntimeException("Failed to delete employee with empId: " + empId, e);
         }
         employeeRepository.save(employee);
+        // 🔔 Publish event after successful delete
+        eventProducer.publishDeleteEvent(new EmployeeEvent(
+                "DELETED", employee.getEmpId(), employee.getName(),
+                employee.getDesignation(), employee.getSalary(),
+                UtcTimestamp.now()));
         return Map.of("message", "Employee with empId: " + empId + " has been deleted successfully.");
     }
 
