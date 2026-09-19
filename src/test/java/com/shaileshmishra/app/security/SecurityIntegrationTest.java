@@ -8,16 +8,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.shaileshmishra.app.employee.event.EmployeeEventProducer;
+import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.employee.service.EmployeeService;
 import com.shaileshmishra.app.user.repository.UserRepository;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration")
 @AutoConfigureMockMvc
 @DisplayName("SecurityIntegrationTest")
 class SecurityIntegrationTest {
@@ -26,10 +28,16 @@ class SecurityIntegrationTest {
     private MockMvc mockMvc;
 
     @MockitoBean
+    private EmployeeRepository employeeRepository;
+
+    @MockitoBean
     private EmployeeService employeeService;
 
     @MockitoBean
     private UserRepository userRepository;
+
+    @MockitoBean
+    private EmployeeEventProducer employeeEventProducer;
 
     @Test
     @DisplayName("should return 401 Unauthorized when accessing protected /employees without JWT token")
