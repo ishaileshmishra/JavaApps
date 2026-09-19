@@ -22,6 +22,7 @@ import com.shaileshmishra.app.employee.dto.EmployeeResponseDTO;
 import com.shaileshmishra.app.employee.models.Employee;
 import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.exception.EmployeeAlreadyExistsException;
+import com.shaileshmishra.app.employee.event.EmployeeEventProducer;
 import com.shaileshmishra.app.exception.EmployeeNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +31,9 @@ class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
+
+    @Mock
+    private EmployeeEventProducer eventProducer;
 
     @InjectMocks
     private EmployeeService employeeService;

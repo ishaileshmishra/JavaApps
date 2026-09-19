@@ -53,4 +53,31 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.CONFLICT)
                                 .body(errorBody);
         }
+
+        @ExceptionHandler(UserAlreadyExistsException.class)
+        public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(
+                        UserAlreadyExistsException ex) {
+
+                Map<String, Object> errorBody = Map.of(
+                                "error_message", ex.getMessage(),
+                                "error_code", 409,
+                                "errors", Map.of("user", List.of(ex.getMessage())));
+
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(errorBody);
+        }
+
+        @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+        public ResponseEntity<Map<String, Object>> handleBadCredentials(
+                        org.springframework.security.authentication.BadCredentialsException ex) {
+
+                Map<String, Object> errorBody = Map.of(
+                                "error_message", "Invalid username or password.",
+                                "error_code", 401);
+
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(errorBody);
+        }
 }

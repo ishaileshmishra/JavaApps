@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -28,7 +29,11 @@ import com.shaileshmishra.app.employee.service.EmployeeService;
 import com.shaileshmishra.app.exception.EmployeeAlreadyExistsException;
 import com.shaileshmishra.app.exception.EmployeeNotFoundException;
 
+import com.shaileshmishra.app.security.CustomUserDetailsService;
+import com.shaileshmishra.app.security.JwtTokenProvider;
+
 @WebMvcTest(EmployeeController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("EmployeeController")
 class EmployeeControllerTest {
 
@@ -37,6 +42,12 @@ class EmployeeControllerTest {
 
     @MockitoBean
     private EmployeeService employeeService;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private CustomUserDetailsService userDetailsService;
 
     private static final String BASE_URL = "/employees";
 
