@@ -8,7 +8,10 @@ import com.shaileshmishra.app.employee.event.EmployeeEventProducer;
 import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.user.repository.UserRepository;
 
-@SpringBootTest(properties = "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration")
+@SpringBootTest(properties = {
+    "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
+    "spring.kafka.listener.auto-startup=false"
+})
 class AppApplicationTests {
 
 	@MockitoBean

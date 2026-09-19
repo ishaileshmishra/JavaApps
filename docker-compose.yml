@@ -1,0 +1,11 @@
+services:
+  employee-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  mongodb:
+    image: mongo
+
+  redis:
+    image: redis
