@@ -29,9 +29,9 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
 
     public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtTokenProvider tokenProvider) {
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtTokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -60,8 +60,7 @@ public class AuthService {
                 passwordEncoder.encode(registerRequest.getPassword()),
                 roles,
                 currentTimestamp,
-                currentTimestamp
-        );
+                currentTimestamp);
 
         userRepository.save(user);
 
@@ -72,9 +71,7 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+                        loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -87,8 +84,6 @@ public class AuthService {
                 jwt,
                 user.getUsername(),
                 user.getRoles(),
-                tokenProvider.getJwtExpirationMs()
-        );
+                tokenProvider.getJwtExpirationMs());
     }
 }
-
