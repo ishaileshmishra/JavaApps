@@ -133,7 +133,7 @@ class EmployeeServiceTest {
         @Test
         @DisplayName("should create employee when name does not exist")
         void shouldCreateEmployee_whenNameIsUnique() {
-            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe"))
                     .thenReturn(false);
             when(employeeRepository.save(any(Employee.class)))
                     .thenReturn(sampleEmployee);
@@ -144,14 +144,64 @@ class EmployeeServiceTest {
             assertEquals("John Doe", result.getName());
             assertEquals("Software Engineer", result.getDesignation());
             assertEquals(new BigDecimal("85000.00"), result.getSalary());
-            verify(employeeRepository).existsByNameAndDeletedAtIsNull("John Doe");
+            verify(employeeRepository).existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe");
             verify(employeeRepository).save(any(Employee.class));
+        }
+
+        @Test
+        @DisplayName("should trim whitespace from name before duplicate check and storage")
+        void shouldTrimName_beforeDuplicateCheckAndStorage() {
+            EmployeeRequestDTO paddedRequest = new EmployeeRequestDTO(
+                    "  John Doe  ", "Software Engineer", new BigDecimal("85000.00"));
+
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe"))
+                    .thenReturn(false);
+            when(employeeRepository.save(any(Employee.class)))
+                    .thenReturn(sampleEmployee);
+
+            employeeService.createEmployee(paddedRequest);
+
+            // Duplicate check must use the TRIMMED name — not the raw padded value
+            verify(employeeRepository).existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe");
+            verify(employeeRepository, never()).existsByNameIgnoreCaseAndDeletedAtIsNull("  John Doe  ");
+        }
+
+        @Test
+        @DisplayName("should reject duplicate when name differs only by case")
+        void shouldRejectDuplicate_whenNameDiffersByCase() {
+            EmployeeRequestDTO lowerCaseRequest = new EmployeeRequestDTO(
+                    "john doe", "Software Engineer", new BigDecimal("85000.00"));
+
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("john doe"))
+                    .thenReturn(true); // DB already has "John Doe" → IgnoreCase match
+
+            EmployeeAlreadyExistsException exception = assertThrows(
+                    EmployeeAlreadyExistsException.class,
+                    () -> employeeService.createEmployee(lowerCaseRequest));
+
+            assertEquals("Employee with name 'john doe' already exists.", exception.getMessage());
+            verify(employeeRepository, never()).save(any(Employee.class));
+        }
+
+        @Test
+        @DisplayName("should reject duplicate when name has both different case and whitespace")
+        void shouldRejectDuplicate_whenNameHasCaseAndWhitespaceDifferences() {
+            EmployeeRequestDTO messy = new EmployeeRequestDTO(
+                    "  JOHN DOE  ", "Software Engineer", new BigDecimal("85000.00"));
+
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("JOHN DOE"))
+                    .thenReturn(true);
+
+            assertThrows(EmployeeAlreadyExistsException.class,
+                    () -> employeeService.createEmployee(messy));
+
+            verify(employeeRepository, never()).save(any(Employee.class));
         }
 
         @Test
         @DisplayName("should publish CREATED event only after save() succeeds — correct ordering")
         void shouldPublishEvent_onlyAfterSave() {
-            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe"))
                     .thenReturn(false);
             when(employeeRepository.save(any(Employee.class)))
                     .thenReturn(sampleEmployee);
@@ -167,7 +217,7 @@ class EmployeeServiceTest {
         @Test
         @DisplayName("should NOT publish event when save() throws")
         void shouldNotPublishEvent_whenSaveFails() {
-            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe"))
                     .thenReturn(false);
             when(employeeRepository.save(any(Employee.class)))
                     .thenThrow(new RuntimeException("DB error"));
@@ -181,7 +231,7 @@ class EmployeeServiceTest {
         @Test
         @DisplayName("should throw EmployeeAlreadyExistsException when name exists")
         void shouldThrowException_whenNameAlreadyExists() {
-            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+            when(employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull("John Doe"))
                     .thenReturn(true);
 
             EmployeeAlreadyExistsException exception = assertThrows(
@@ -192,6 +242,7 @@ class EmployeeServiceTest {
             verify(employeeRepository, never()).save(any(Employee.class));
         }
     }
+
 
     @Nested
     @DisplayName("updateEmployee")

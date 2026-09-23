@@ -72,12 +72,16 @@ public class EmployeeService {
      * @return The response object containing the created employee details.
      */
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
-        if (employeeRepository.existsByNameAndDeletedAtIsNull(request.getName())) {
+        // Normalize: trim whitespace so " John Doe " and "John Doe" are treated the same
+        String normalizedName = request.getName().trim();
+
+        if (employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull(normalizedName)) {
             throw new EmployeeAlreadyExistsException(
-                    "Employee with name '" + request.getName() + "' already exists.");
+                    "Employee with name '" + normalizedName + "' already exists.");
         }
         var currentTimestamp = UtcTimestamp.now();
-        var employee = new Employee(request.getName(), request.getDesignation(), EmployeeIdGenerator.generate(),
+        // Store the trimmed name, not the raw request value
+        var employee = new Employee(normalizedName, request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
 
         Employee saved = employeeRepository.save(employee);

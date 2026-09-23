@@ -13,4 +13,7 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
     List<Employee> findByDeletedAtIsNull();
 
     boolean existsByNameAndDeletedAtIsNull(String name);
+
+    // Case-insensitive duplicate check — guards against "john doe" vs "John Doe"
+    boolean existsByNameIgnoreCaseAndDeletedAtIsNull(String name);
 }
