@@ -80,4 +80,18 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.UNAUTHORIZED)
                                 .body(errorBody);
         }
+
+        @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+        public ResponseEntity<Map<String, Object>> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException ex) {
+                Map<String, List<String>> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+                                .collect(java.util.stream.Collectors.groupingBy(
+                                                org.springframework.validation.FieldError::getField,
+                                                java.util.stream.Collectors.mapping(
+                                                                org.springframework.validation.FieldError::getDefaultMessage,
+                                                                java.util.stream.Collectors.toList())));
+                
+                return ResponseEntity.badRequest().body(Map.of(
+                                "error_code", 400,
+                                "errors", fieldErrors));
+        }
 }
