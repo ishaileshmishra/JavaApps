@@ -85,9 +85,9 @@ public class GlobalExceptionHandler {
         public ResponseEntity<Map<String, Object>> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException ex) {
                 Map<String, List<String>> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                                 .collect(java.util.stream.Collectors.groupingBy(
-                                                org.springframework.validation.FieldError::getField,
+                                                error -> error.getField() != null ? error.getField() : "unknown",
                                                 java.util.stream.Collectors.mapping(
-                                                                org.springframework.validation.FieldError::getDefaultMessage,
+                                                                error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value",
                                                                 java.util.stream.Collectors.toList())));
                 
                 return ResponseEntity.badRequest().body(Map.of(
