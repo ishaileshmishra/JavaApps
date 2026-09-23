@@ -79,7 +79,7 @@ public class EmployeeService {
             throw new EmployeeAlreadyExistsException(
                     "Employee with name '" + normalizedName + "' already exists.");
         }
-        var currentTimestamp = UtcTimestamp.now();
+        var currentTimestamp = UtcTimestamp.nowAsInstant();
         // Store the trimmed name, not the raw request value
         var employee = new Employee(normalizedName, request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
@@ -103,7 +103,7 @@ public class EmployeeService {
         employee.setName(request.getName());
         employee.setDesignation(request.getDesignation());
         employee.setSalary(request.getSalary());
-        employee.setUpdatedAt(UtcTimestamp.now());
+        employee.setUpdatedAt(UtcTimestamp.nowAsInstant());
         return toResponse(employeeRepository.save(employee));
     }
 
@@ -129,7 +129,7 @@ public class EmployeeService {
      */
     public Map<String, Object> deleteEmployee(String empId) {
         Employee employee = getEmployeeById(empId);
-        employee.setDeletedAt(UtcTimestamp.now());
+        employee.setDeletedAt(UtcTimestamp.nowAsInstant());
         employeeRepository.save(employee);
         eventProducer.publishDeleteEvent(new EmployeeEvent(
                 "DELETED", employee.getEmpId(), employee.getName(),

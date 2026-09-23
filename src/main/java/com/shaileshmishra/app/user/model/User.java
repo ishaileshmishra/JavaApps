@@ -1,5 +1,6 @@
 package com.shaileshmishra.app.user.model;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,14 +24,14 @@ public class User {
 
     private Set<String> roles = new HashSet<>();
 
-    private String createdAt;
+    private Instant createdAt;
 
-    private String updatedAt;
+    private Instant updatedAt;
 
     public User() {
     }
 
-    public User(String username, String email, String password, Set<String> roles, String createdAt, String updatedAt) {
+    public User(String username, String email, String password, Set<String> roles, Instant createdAt, Instant updatedAt) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -39,7 +40,7 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public User(String id, String username, String email, String password, Set<String> roles, String createdAt, String updatedAt) {
+    public User(String id, String username, String email, String password, Set<String> roles, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -89,19 +90,19 @@ public class User {
         this.roles = roles;
     }
 
-    public String getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -1,5 +1,6 @@
 package com.shaileshmishra.app.auth.service;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class AuthService {
             roles.add("USER");
         }
 
-        String currentTimestamp = UtcTimestamp.now();
+        Instant currentTimestamp = UtcTimestamp.nowAsInstant();
         User user = new User(
                 registerRequest.getUsername(),
                 registerRequest.getEmail(),

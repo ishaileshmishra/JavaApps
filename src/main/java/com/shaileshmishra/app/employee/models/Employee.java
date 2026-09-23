@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Document(collection = "employees")
 public class Employee {
@@ -15,11 +16,12 @@ public class Employee {
     private String empId;
     private BigDecimal salary;
     private String internalCode;
-    private String createdAt;
-    private String updatedAt;
-    private String deletedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
 
-    public Employee(String name, String designation, String empId, BigDecimal salary, String createdAt, String updatedAt) {
+    public Employee(String name, String designation, String empId, BigDecimal salary, Instant createdAt,
+            Instant updatedAt) {
         this.name = name;
         this.designation = designation;
         this.empId = empId;
@@ -70,27 +72,27 @@ public class Employee {
         this.internalCode = internalCode;
     }
 
-    public String getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public String getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public String getDeletedAt() {
+    public Instant getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
+    public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
 }
