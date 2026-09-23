@@ -3,3 +3,7 @@ build/
 bin/
 .DS_Store
 .vscode/
+# Secret environment files — NEVER commit these
+.env
+.env.local
+

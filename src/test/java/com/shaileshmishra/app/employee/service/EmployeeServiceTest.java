@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InOrder;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -147,6 +149,36 @@ class EmployeeServiceTest {
         }
 
         @Test
+        @DisplayName("should publish CREATED event only after save() succeeds — correct ordering")
+        void shouldPublishEvent_onlyAfterSave() {
+            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+                    .thenReturn(false);
+            when(employeeRepository.save(any(Employee.class)))
+                    .thenReturn(sampleEmployee);
+
+            employeeService.createEmployee(sampleRequest);
+
+            // Assert strict ordering: save must happen before the event is published
+            InOrder inOrder = inOrder(employeeRepository, eventProducer);
+            inOrder.verify(employeeRepository).save(any(Employee.class));
+            inOrder.verify(eventProducer).publishCreateEvent(any());
+        }
+
+        @Test
+        @DisplayName("should NOT publish event when save() throws")
+        void shouldNotPublishEvent_whenSaveFails() {
+            when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
+                    .thenReturn(false);
+            when(employeeRepository.save(any(Employee.class)))
+                    .thenThrow(new RuntimeException("DB error"));
+
+            assertThrows(RuntimeException.class, () -> employeeService.createEmployee(sampleRequest));
+
+            // Event must never be published if persistence failed
+            verify(eventProducer, never()).publishCreateEvent(any());
+        }
+
+        @Test
         @DisplayName("should throw EmployeeAlreadyExistsException when name exists")
         void shouldThrowException_whenNameAlreadyExists() {
             when(employeeRepository.existsByNameAndDeletedAtIsNull("John Doe"))
@@ -212,7 +244,7 @@ class EmployeeServiceTest {
             assertEquals("Employee with empId: sh1234abcd5678ef has been deleted successfully.",
                     result.get("message"));
             assertNotNull(sampleEmployee.getDeletedAt());
-            verify(employeeRepository, atLeastOnce()).save(sampleEmployee);
+            verify(employeeRepository, times(1)).save(sampleEmployee);  // exactly one save — double-save bug is fixed
         }
 
         @Test
