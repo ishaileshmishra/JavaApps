@@ -84,11 +84,16 @@ public class EmployeeService {
         var employee = new Employee(normalizedName, request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
 
-        Employee saved = employeeRepository.save(employee);
-        eventProducer.publishEvent(new EmployeeEvent("CREATED", saved.getEmpId(), saved.getName(),
-                saved.getDesignation(), saved.getSalary(),
-                UtcTimestamp.now()));
-        return toResponse(saved);
+        try {
+            Employee saved = employeeRepository.save(employee);
+            eventProducer.publishEvent(new EmployeeEvent("CREATED", saved.getEmpId(), saved.getName(),
+                    saved.getDesignation(), saved.getSalary(),
+                    UtcTimestamp.now()));
+            return toResponse(saved);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+            throw new EmployeeAlreadyExistsException(
+                    "Employee with name '" + normalizedName + "' already exists.");
+        }
     }
 
     /**
