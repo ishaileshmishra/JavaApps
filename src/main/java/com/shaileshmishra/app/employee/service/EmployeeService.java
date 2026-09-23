@@ -43,24 +43,33 @@ public class EmployeeService {
     }
 
     /**
-     * This method is used to get an employee by empId.
-     * 
-     * @param empId The employee ID of the employee to get.
-     * @return The response object containing the employee details.
+     * This method is used to get an employee entity by empId (internal use).
      */
-    public Employee getEmployeeById(String empId) {
+    Employee getEmployeeEntityById(String empId) {
         return employeeRepository.findByEmpIdAndDeletedAtIsNull(empId)
                 .orElseThrow(() -> new EmployeeNotFoundException(
                         "Employee not found with empId: " + empId));
     }
 
     /**
-     * This method is used to get all employees.
+     * This method is used to get an employee by empId.
      * 
+     * @param empId The employee ID of the employee to get.
      * @return The response object containing the employee details.
      */
-    public List<EmployeeResponseDTO> getEmployees() {
-        return employeeRepository.findByDeletedAtIsNull().stream().map(
+    public EmployeeResponseDTO getEmployeeById(String empId) {
+        return toResponse(getEmployeeEntityById(empId));
+    }
+
+    /**
+     * This method is used to get all employees with pagination.
+     * 
+     * @param skip  The number of elements to skip.
+     * @param limit The maximum number of elements to return.
+     * @return The response object containing the employee details.
+     */
+    public List<EmployeeResponseDTO> getEmployees(int skip, int limit) {
+        return employeeRepository.findByDeletedAtIsNull(new com.shaileshmishra.app.common.util.OffsetPageRequest(skip, limit)).stream().map(
                 this::toResponse)
                 .toList();
     }
@@ -99,7 +108,7 @@ public class EmployeeService {
      * @return The response object containing the updated employee details.
      */
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO request) {
-        Employee employee = getEmployeeById(empId);
+        Employee employee = getEmployeeEntityById(empId);
         employee.setName(request.getName());
         employee.setDesignation(request.getDesignation());
         employee.setSalary(request.getSalary());
@@ -128,7 +137,7 @@ public class EmployeeService {
      * @return The response object containing the deleted employee details.
      */
     public Map<String, Object> deleteEmployee(String empId) {
-        Employee employee = getEmployeeById(empId);
+        Employee employee = getEmployeeEntityById(empId);
         employee.setDeletedAt(UtcTimestamp.nowAsInstant());
         employeeRepository.save(employee);
         eventProducer.publishDeleteEvent(new EmployeeEvent(

@@ -70,7 +70,7 @@ class EmployeeServiceTest {
             when(employeeRepository.findByEmpIdAndDeletedAtIsNull("sh1234abcd5678ef"))
                     .thenReturn(Optional.of(sampleEmployee));
 
-            Employee result = employeeService.getEmployeeById("sh1234abcd5678ef");
+            EmployeeResponseDTO result = employeeService.getEmployeeById("sh1234abcd5678ef");
 
             assertNotNull(result);
             assertEquals("John Doe", result.getName());
@@ -104,24 +104,24 @@ class EmployeeServiceTest {
                     "Jane Smith", "Backend Developer", "sh5678efgh1234ab",
                     new BigDecimal("95000.00"), Instant.parse("2026-09-18T12:00:00.000Z"), Instant.parse("2026-09-18T12:00:00.000Z"));
 
-            when(employeeRepository.findByDeletedAtIsNull())
+            when(employeeRepository.findByDeletedAtIsNull(any()))
                     .thenReturn(List.of(sampleEmployee, employee2));
 
-            List<EmployeeResponseDTO> result = employeeService.getEmployees();
+            List<EmployeeResponseDTO> result = employeeService.getEmployees(0, 20);
 
             assertEquals(2, result.size());
             assertEquals("John Doe", result.get(0).getName());
             assertEquals("Jane Smith", result.get(1).getName());
-            verify(employeeRepository).findByDeletedAtIsNull();
+            verify(employeeRepository).findByDeletedAtIsNull(any());
         }
 
         @Test
         @DisplayName("should return empty list when no employees exist")
         void shouldReturnEmptyList_whenNoEmployees() {
-            when(employeeRepository.findByDeletedAtIsNull())
+            when(employeeRepository.findByDeletedAtIsNull(any()))
                     .thenReturn(List.of());
 
-            List<EmployeeResponseDTO> result = employeeService.getEmployees();
+            List<EmployeeResponseDTO> result = employeeService.getEmployees(0, 20);
 
             assertTrue(result.isEmpty());
         }

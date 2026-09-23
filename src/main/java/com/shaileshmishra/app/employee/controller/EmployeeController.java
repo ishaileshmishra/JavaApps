@@ -31,19 +31,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<EmployeeResponseDTO> getEmployees() {
-        return this.employeeService.getEmployees();
+    public List<EmployeeResponseDTO> getEmployees(
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int skip,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int limit) {
+        return this.employeeService.getEmployees(skip, limit);
     }
 
     @GetMapping("/{empId}")
     public ResponseEntity<EmployeeResponseDTO> getEmployee(
             @PathVariable String empId) {
-        var currentEmp = this.employeeService.getEmployeeById(empId);
-        return ResponseEntity.ok(new EmployeeResponseDTO(
-                currentEmp.getName(),
-                currentEmp.getDesignation(),
-                currentEmp.getEmpId(),
-                currentEmp.getSalary()));
+        return ResponseEntity.ok(this.employeeService.getEmployeeById(empId));
     }
 
     @PostMapping

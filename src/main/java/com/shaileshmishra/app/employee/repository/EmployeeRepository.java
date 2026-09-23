@@ -7,10 +7,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.shaileshmishra.app.employee.models.Employee;
 
+import org.springframework.data.domain.Pageable;
+
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Optional<Employee> findByEmpIdAndDeletedAtIsNull(String empId);
 
-    List<Employee> findByDeletedAtIsNull();
+    List<Employee> findByDeletedAtIsNull(Pageable pageable);
 
     boolean existsByNameAndDeletedAtIsNull(String name);
 
