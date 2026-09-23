@@ -20,8 +20,9 @@ import com.shaileshmishra.app.employee.service.EmployeeService;
 import com.shaileshmishra.app.user.repository.UserRepository;
 
 @SpringBootTest(properties = {
-    "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
-    "spring.kafka.listener.auto-startup=false"
+        "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration,org.springframework.boot.mongodb.autoconfigure.health.MongoHealthContributorAutoConfiguration,org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
+        "spring.kafka.listener.auto-startup=false",
+        "management.health.mongodb.enabled=false"
 })
 @AutoConfigureMockMvc
 @DisplayName("SecurityIntegrationTest")
@@ -55,8 +56,8 @@ class SecurityIntegrationTest {
     @DisplayName("should allow public access to /auth/register")
     void shouldAllowPublicAccessToRegister() throws Exception {
         mockMvc.perform(post("/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
                 .andExpect(status().isBadRequest()); // Bad request due to missing fields, NOT 401 Unauthorized
     }
 
@@ -64,8 +65,24 @@ class SecurityIntegrationTest {
     @DisplayName("should allow public access to /auth/login")
     void shouldAllowPublicAccessToLogin() throws Exception {
         mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
                 .andExpect(status().isBadRequest()); // Bad request due to missing fields, NOT 401 Unauthorized
+    }
+
+    @Test
+    @DisplayName("should allow public access to /actuator/health")
+    void shouldAllowPublicAccessToActuatorHealth() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+
+    @Test
+    @DisplayName("should allow public access to /health")
+    void shouldAllowPublicAccessToHealth() throws Exception {
+        mockMvc.perform(get("/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
     }
 }

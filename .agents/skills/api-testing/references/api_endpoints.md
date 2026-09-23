@@ -47,7 +47,27 @@
 
 ---
 
-## 3. Global Exception Response Schema (`ErrorResponse`)
+## 3. Health & Monitoring Endpoints
+
+| Method | Endpoint           | Description                                  | Success Status | Error Codes |
+| :----- | :----------------- | :------------------------------------------- | :------------- | :---------- |
+| `GET`  | `/actuator/health` | Spring Boot Actuator comprehensive health    | `200 OK`       | `503`       |
+| `GET`  | `/health`          | Lightweight service health ping              | `200 OK`       | `500`       |
+
+### Schemas
+
+#### HealthResponseDTO (`/health`)
+```json
+{
+  "status": "UP",
+  "service": "JavaApps",
+  "timestamp": "2026-09-23T13:30:00.000Z"
+}
+```
+
+---
+
+## 4. Global Exception Response Schema (`ErrorResponse`)
 
 ```json
 {

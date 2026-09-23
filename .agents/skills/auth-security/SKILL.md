@@ -33,7 +33,7 @@ This skill provides architecture and operational rules for `com.shaileshmishra.a
 ## Security Invariants & Workflows
 
 ### 1. Endpoint Access Rules
-- **Public**: `/auth/**` and `/error` require no credentials (`permitAll()`).
+- **Public**: `/auth/**`, `/error`, `/actuator/**`, and `/health` require no credentials (`permitAll()`).
 - **Protected**: All other routes (e.g. `/employees/**`) require a valid JWT header (`Authorization: Bearer <jwt-token>`).
 
 ### 2. Password Security

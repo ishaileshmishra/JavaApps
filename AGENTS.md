@@ -13,6 +13,6 @@ This project employs Antigravity Skills for modular context loading to minimize 
 
 ## Core Invariants
 1. **Employee Deletions**: Must be soft-deletes via `deletedAt = UtcTimestamp.now()`.
-2. **Security**: Stateless JWT; public endpoints are strictly `/auth/**` and `/error`.
+2. **Security**: Stateless JWT; public endpoints are `/auth/**`, `/error`, `/actuator/**`, and `/health`.
 3. **Events**: Employee creations and deletions must publish an `EmployeeEvent` to Kafka `employee-events`.
 4. **Build & Test**: Run `./gradlew test` to verify changes before concluding tasks.

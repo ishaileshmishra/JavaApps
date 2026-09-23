@@ -9,8 +9,9 @@ import com.shaileshmishra.app.employee.repository.EmployeeRepository;
 import com.shaileshmishra.app.user.repository.UserRepository;
 
 @SpringBootTest(properties = {
-    "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
-    "spring.kafka.listener.auto-startup=false"
+    "spring.autoconfigure.exclude=org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration,org.springframework.boot.mongodb.autoconfigure.health.MongoHealthContributorAutoConfiguration,org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
+    "spring.kafka.listener.auto-startup=false",
+    "management.health.mongodb.enabled=false"
 })
 class AppApplicationTests {
 
