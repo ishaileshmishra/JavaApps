@@ -32,8 +32,8 @@ public class EmployeeController {
 
     @GetMapping
     public List<EmployeeResponseDTO> getEmployees(
-            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int skip,
-            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int limit) {
+            @org.springframework.web.bind.annotation.RequestParam(name = "skip", defaultValue = "0") int skip,
+            @org.springframework.web.bind.annotation.RequestParam(name = "limit", defaultValue = "20") int limit) {
         return this.employeeService.getEmployees(skip, limit);
     }
 
