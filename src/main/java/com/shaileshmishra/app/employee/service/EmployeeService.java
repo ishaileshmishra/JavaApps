@@ -22,27 +22,55 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeEventProducer eventProducer; // ← inject
 
+    /**
+     * This method is used to create an EmployeeService.
+     * 
+     * @param employeeRepository The employee repository.
+     * @param eventProducer      The event producer.
+     */
     public EmployeeService(EmployeeRepository employeeRepository, EmployeeEventProducer eventProducer) {
         this.employeeRepository = employeeRepository;
         this.eventProducer = eventProducer;
     }
 
+    /**
+     * This method is used to check if the service is running.
+     * 
+     * @return The response object containing the service status.
+     */
     public String ping() {
         return "All okay";
     }
 
+    /**
+     * This method is used to get an employee by empId.
+     * 
+     * @param empId The employee ID of the employee to get.
+     * @return The response object containing the employee details.
+     */
     public Employee getEmployeeById(String empId) {
         return employeeRepository.findByEmpIdAndDeletedAtIsNull(empId)
                 .orElseThrow(() -> new EmployeeNotFoundException(
                         "Employee not found with empId: " + empId));
     }
 
+    /**
+     * This method is used to get all employees.
+     * 
+     * @return The response object containing the employee details.
+     */
     public List<EmployeeResponseDTO> getEmployees() {
         return employeeRepository.findByDeletedAtIsNull().stream().map(
                 this::toResponse)
                 .toList();
     }
 
+    /**
+     * This method is used to create a new employee.
+     * 
+     * @param request The request object containing the employee details.
+     * @return The response object containing the created employee details.
+     */
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         if (employeeRepository.existsByNameAndDeletedAtIsNull(request.getName())) {
             throw new EmployeeAlreadyExistsException(
@@ -52,15 +80,20 @@ public class EmployeeService {
         var employee = new Employee(request.getName(), request.getDesignation(), EmployeeIdGenerator.generate(),
                 request.getSalary(), currentTimestamp, currentTimestamp);
 
-        // 🔔 Publish event after successful save
-        eventProducer.publishCreateEvent(new EmployeeEvent(
-                "CREATED", employee.getEmpId(), employee.getName(),
-                employee.getDesignation(), employee.getSalary(),
+        Employee saved = employeeRepository.save(employee);
+        eventProducer.publishCreateEvent(new EmployeeEvent("CREATED", saved.getEmpId(), saved.getName(),
+                saved.getDesignation(), saved.getSalary(),
                 UtcTimestamp.now()));
-        // save the employee and return the response
-        return toResponse(employeeRepository.save(employee));
+        return toResponse(saved);
     }
 
+    /**
+     * This method is used to update an employee.
+     * 
+     * @param empId   The employee ID of the employee to update.
+     * @param request The request object containing the employee details.
+     * @return The response object containing the updated employee details.
+     */
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO request) {
         Employee employee = getEmployeeById(empId);
         employee.setName(request.getName());
@@ -70,6 +103,12 @@ public class EmployeeService {
         return toResponse(employeeRepository.save(employee));
     }
 
+    /**
+     * This method is used to convert an employee to a response object.
+     * 
+     * @param employee The employee to convert.
+     * @return The response object containing the employee details.
+     */
     private EmployeeResponseDTO toResponse(Employee employee) {
         return new EmployeeResponseDTO(
                 employee.getName(),
@@ -78,19 +117,16 @@ public class EmployeeService {
                 employee.getSalary());
     }
 
+    /**
+     * This method is used to delete an employee.
+     * 
+     * @param empId The employee ID of the employee to delete.
+     * @return The response object containing the deleted employee details.
+     */
     public Map<String, Object> deleteEmployee(String empId) {
         Employee employee = getEmployeeById(empId);
         employee.setDeletedAt(UtcTimestamp.now());
-        if (employee.getDeletedAt() == null) {
-            throw new RuntimeException("Failed to delete employee with empId: " + empId);
-        }
-        try {
-            employeeRepository.save(employee);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to delete employee with empId: " + empId, e);
-        }
         employeeRepository.save(employee);
-        // 🔔 Publish event after successful delete
         eventProducer.publishDeleteEvent(new EmployeeEvent(
                 "DELETED", employee.getEmpId(), employee.getName(),
                 employee.getDesignation(), employee.getSalary(),
