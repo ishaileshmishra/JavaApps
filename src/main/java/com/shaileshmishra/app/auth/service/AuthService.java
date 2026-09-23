@@ -78,13 +78,17 @@ public class AuthService {
 
         String jwt = tokenProvider.generateToken(authentication);
 
-        User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        org.springframework.security.core.userdetails.UserDetails userDetails = 
+                (org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal();
+
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(auth -> auth.getAuthority().replace("ROLE_", ""))
+                .collect(java.util.stream.Collectors.toSet());
 
         return new AuthResponseDTO(
                 jwt,
-                user.getUsername(),
-                user.getRoles(),
+                userDetails.getUsername(),
+                roles,
                 tokenProvider.getJwtExpirationMs());
     }
 }

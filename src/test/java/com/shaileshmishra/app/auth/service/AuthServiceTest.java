@@ -91,11 +91,15 @@ class AuthServiceTest {
     @DisplayName("should login user successfully and return JWT token")
     void shouldLoginUser_whenCredentialsAreValid() {
         Authentication authentication = mock(Authentication.class);
+        org.springframework.security.core.userdetails.User mockUserDetails = 
+            new org.springframework.security.core.userdetails.User("testuser", "password", java.util.Set.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER")));
+        when(authentication.getPrincipal()).thenReturn(mockUserDetails);
+
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(tokenProvider.generateToken(authentication)).thenReturn("mocked-jwt-token");
         when(tokenProvider.getJwtExpirationMs()).thenReturn(86400000L);
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        // userRepository.findByUsername is no longer called!
 
         AuthResponseDTO response = authService.loginUser(loginRequest);
 
