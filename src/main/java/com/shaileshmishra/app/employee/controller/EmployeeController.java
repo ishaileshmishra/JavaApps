@@ -61,6 +61,15 @@ public class EmployeeController {
                 this.employeeService.updateEmployee(empId, request));
     }
 
+    @org.springframework.web.bind.annotation.PatchMapping("/{empId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EmployeeResponseDTO> patchEmployee(
+            @PathVariable String empId,
+            @Valid @RequestBody com.shaileshmishra.app.employee.dto.EmployeePatchRequestDTO request) {
+        return ResponseEntity.ok(
+                this.employeeService.patchEmployee(empId, request));
+    }
+
     @DeleteMapping("/{empId}")
     @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteEmployee(

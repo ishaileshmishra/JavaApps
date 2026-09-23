@@ -60,8 +60,10 @@ public class EmployeeService {
      * @return The response object containing the employee details.
      */
     public List<EmployeeResponseDTO> getEmployees(int skip, int limit) {
-        return employeeRepository.findByDeletedAtIsNull(new com.shaileshmishra.app.common.util.OffsetPageRequest(skip, limit)).stream().map(
-                this::toResponse)
+        return employeeRepository
+                .findByDeletedAtIsNull(new com.shaileshmishra.app.common.util.OffsetPageRequest(skip, limit)).stream()
+                .map(
+                        this::toResponse)
                 .toList();
     }
 
@@ -72,7 +74,8 @@ public class EmployeeService {
      * @return The response object containing the created employee details.
      */
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
-        // Normalize: trim whitespace so " John Doe " and "John Doe" are treated the same
+        // Normalize: trim whitespace so " John Doe " and "John Doe" are treated the
+        // same
         String normalizedName = request.getName().trim();
 
         if (employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull(normalizedName)) {
@@ -110,6 +113,38 @@ public class EmployeeService {
         employee.setSalary(request.getSalary());
         employee.setUpdatedAt(UtcTimestamp.nowAsInstant());
         return toResponse(employeeRepository.save(employee));
+    }
+
+    /**
+     * This method is used to partially update an employee.
+     * 
+     * @param empId   The employee ID of the employee to update.
+     * @param request The request object containing the fields to update.
+     * @return The response object containing the updated employee details.
+     */
+    public EmployeeResponseDTO patchEmployee(String empId,
+            com.shaileshmishra.app.employee.dto.EmployeePatchRequestDTO request) {
+        Employee employee = getEmployeeEntityById(empId);
+        boolean updated = false;
+
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            employee.setName(request.getName().trim());
+            updated = true;
+        }
+        if (request.getDesignation() != null && !request.getDesignation().trim().isEmpty()) {
+            employee.setDesignation(request.getDesignation().trim());
+            updated = true;
+        }
+        if (request.getSalary() != null) {
+            employee.setSalary(request.getSalary());
+            updated = true;
+        }
+
+        if (updated) {
+            employee.setUpdatedAt(UtcTimestamp.nowAsInstant());
+            employee = employeeRepository.save(employee);
+        }
+        return toResponse(employee);
     }
 
     /**
