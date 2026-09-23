@@ -3,9 +3,18 @@ package com.shaileshmishra.app.employee.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "employees")
 public class Employee {
     @Id
@@ -16,7 +25,8 @@ public class Employee {
     @Indexed(unique = true)
     private String empId;
     private BigDecimal salary;
-    private String internalCode;
+    @Builder.Default
+    private String internalCode = "INT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     private Instant createdAt;
     private Instant updatedAt;
     private Instant deletedAt;
@@ -29,71 +39,7 @@ public class Employee {
         this.salary = salary;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.internalCode = "INT-100";
+        this.internalCode = "blt" + java.util.UUID.randomUUID().toString().substring(0, 8).toLowerCase();
         this.deletedAt = null;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
-
-    public String getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(String empId) {
-        this.empId = empId;
-    }
-
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-    public void setSalary(BigDecimal salary) {
-        this.salary = salary;
-    }
-
-    public String getInternalCode() {
-        return internalCode;
-    }
-
-    public void setInternalCode(String internalCode) {
-        this.internalCode = internalCode;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(Instant deletedAt) {
-        this.deletedAt = deletedAt;
     }
 }

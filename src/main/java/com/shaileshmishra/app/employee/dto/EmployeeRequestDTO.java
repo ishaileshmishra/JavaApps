@@ -2,7 +2,13 @@ package com.shaileshmishra.app.employee.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeRequestDTO {
 
     @NotBlank 
@@ -13,37 +19,4 @@ public class EmployeeRequestDTO {
 
     @Positive
     private BigDecimal salary;
-
-    public EmployeeRequestDTO() {
-    }
-
-    public EmployeeRequestDTO(String name, String designation, BigDecimal salary) {
-        this.name = name;
-        this.designation = designation;
-        this.salary = salary;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
-
-    public void setSalary(BigDecimal salary) {
-        this.salary = salary;
-    }
 }
