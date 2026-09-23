@@ -1,5 +1,10 @@
 # JavaApps Workspace Guidelines
 
+## Response & Verification Standards
+1. **Never Assume or Guess**: Never provide generic or theoretical answers. Always inspect the relevant codebase files (e.g., Dockerfile, build.gradle, properties) and check active system states before answering.
+2. **Validate Before Responding**: If providing commands, verify that all prerequisites in the repository are satisfied and that the command works end-to-end.
+3. **Be Concrete and Precise**: Ground every explanation in the exact code, file paths, and configurations present in this workspace.
+
 ## Architecture & Progressive Disclosure
 This project employs Antigravity Skills for modular context loading to minimize token consumption.
 
