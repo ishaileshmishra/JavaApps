@@ -22,14 +22,6 @@ public class EmployeeEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publishCreateEvent(EmployeeEvent event) {
-        publishEvent(event);
-    }
-
-    public void publishDeleteEvent(EmployeeEvent event) {
-        publishEvent(event);
-    }
-
     /**
      * Publishes an EmployeeEvent to Kafka and blocks until the broker acknowledges
      * receipt (up to {@code SEND_TIMEOUT_SECONDS}). Throws on failure so callers
@@ -38,7 +30,7 @@ public class EmployeeEventProducer {
      * @param event the event to publish
      * @throws RuntimeException if the send fails or times out
      */
-    private void publishEvent(EmployeeEvent event) {
+    public void publishEvent(EmployeeEvent event) {
         try {
             kafkaTemplate.send(TOPIC, event.getEmpId(), event)
                     .get(SEND_TIMEOUT_SECONDS, TimeUnit.SECONDS);

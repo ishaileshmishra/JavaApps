@@ -34,15 +34,6 @@ public class EmployeeService {
     }
 
     /**
-     * This method is used to check if the service is running.
-     * 
-     * @return The response object containing the service status.
-     */
-    public String ping() {
-        return "All okay";
-    }
-
-    /**
      * This method is used to get an employee entity by empId (internal use).
      */
     Employee getEmployeeEntityById(String empId) {
@@ -94,7 +85,7 @@ public class EmployeeService {
                 request.getSalary(), currentTimestamp, currentTimestamp);
 
         Employee saved = employeeRepository.save(employee);
-        eventProducer.publishCreateEvent(new EmployeeEvent("CREATED", saved.getEmpId(), saved.getName(),
+        eventProducer.publishEvent(new EmployeeEvent("CREATED", saved.getEmpId(), saved.getName(),
                 saved.getDesignation(), saved.getSalary(),
                 UtcTimestamp.now()));
         return toResponse(saved);
@@ -140,7 +131,7 @@ public class EmployeeService {
         Employee employee = getEmployeeEntityById(empId);
         employee.setDeletedAt(UtcTimestamp.nowAsInstant());
         employeeRepository.save(employee);
-        eventProducer.publishDeleteEvent(new EmployeeEvent(
+        eventProducer.publishEvent(new EmployeeEvent(
                 "DELETED", employee.getEmpId(), employee.getName(),
                 employee.getDesignation(), employee.getSalary(),
                 UtcTimestamp.now()));

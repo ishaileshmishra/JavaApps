@@ -54,12 +54,6 @@ class EmployeeServiceTest {
                 "John Doe", "Software Engineer", new BigDecimal("85000.00"));
     }
 
-    @Test
-    @DisplayName("ping() should return 'All okay'")
-    void ping_shouldReturnAllOkay() {
-        assertEquals("All okay", employeeService.ping());
-    }
-
     @Nested
     @DisplayName("getEmployeeById")
     class GetEmployeeById {
@@ -212,7 +206,7 @@ class EmployeeServiceTest {
             // Assert strict ordering: save must happen before the event is published
             InOrder inOrder = inOrder(employeeRepository, eventProducer);
             inOrder.verify(employeeRepository).save(any(Employee.class));
-            inOrder.verify(eventProducer).publishCreateEvent(any());
+            inOrder.verify(eventProducer).publishEvent(any());
         }
 
         @Test
@@ -226,7 +220,7 @@ class EmployeeServiceTest {
             assertThrows(RuntimeException.class, () -> employeeService.createEmployee(sampleRequest));
 
             // Event must never be published if persistence failed
-            verify(eventProducer, never()).publishCreateEvent(any());
+            verify(eventProducer, never()).publishEvent(any());
         }
 
         @Test
