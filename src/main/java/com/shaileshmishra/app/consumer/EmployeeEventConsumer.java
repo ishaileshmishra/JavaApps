@@ -1,4 +1,5 @@
-package com.shaileshmishra.app.comsumer;
+package com.shaileshmishra.app.consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -6,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.shaileshmishra.app.employee.event.EmployeeEvent;
 
-
 @Service
 public class EmployeeEventConsumer {
     private static final Logger log = LoggerFactory.getLogger(EmployeeEventConsumer.class);
+
     @KafkaListener(topics = "employee-events", groupId = "employee-service-group")
     public void handleEvent(EmployeeEvent event) {
         switch (event.getEventType()) {
