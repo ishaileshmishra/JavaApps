@@ -44,6 +44,7 @@ public class EmployeeController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDTO> createEmployee(
             @Valid @RequestBody EmployeeRequestDTO request) {
         return ResponseEntity
@@ -52,6 +53,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{empId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @PathVariable String empId,
             @Valid @RequestBody EmployeeRequestDTO request) {
@@ -60,6 +62,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{empId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteEmployee(
             @PathVariable String empId) {
         var response = this.employeeService.deleteEmployee(empId);
