@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,7 +56,7 @@ class AuthServiceTest {
     void setUp() {
         registerRequest = new RegisterRequestDTO("testuser", "test@example.com", "password123");
         loginRequest = new LoginRequestDTO("testuser", "password123");
-        user = new User("1", "testuser", "test@example.com", "encodedPassword", Set.of("USER"), "now", "now");
+        user = new User("1", "testuser", "test@example.com", "encodedPassword", Set.of("USER"), Instant.now(), Instant.now());
     }
 
     @Test

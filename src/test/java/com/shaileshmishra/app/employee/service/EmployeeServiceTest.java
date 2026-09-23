@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.InOrder;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ class EmployeeServiceTest {
     void setUp() {
         sampleEmployee = new Employee(
                 "John Doe", "Software Engineer", "sh1234abcd5678ef",
-                new BigDecimal("85000.00"), "2026-09-18T12:00:00.000Z", "2026-09-18T12:00:00.000Z");
+                new BigDecimal("85000.00"), Instant.parse("2026-09-18T12:00:00.000Z"), Instant.parse("2026-09-18T12:00:00.000Z"));
 
         sampleRequest = new EmployeeRequestDTO(
                 "John Doe", "Software Engineer", new BigDecimal("85000.00"));
@@ -101,7 +102,7 @@ class EmployeeServiceTest {
         void shouldReturnEmployeeList() {
             Employee employee2 = new Employee(
                     "Jane Smith", "Backend Developer", "sh5678efgh1234ab",
-                    new BigDecimal("95000.00"), "2026-09-18T12:00:00.000Z", "2026-09-18T12:00:00.000Z");
+                    new BigDecimal("95000.00"), Instant.parse("2026-09-18T12:00:00.000Z"), Instant.parse("2026-09-18T12:00:00.000Z"));
 
             when(employeeRepository.findByDeletedAtIsNull())
                     .thenReturn(List.of(sampleEmployee, employee2));

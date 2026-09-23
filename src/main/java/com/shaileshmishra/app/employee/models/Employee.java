@@ -10,6 +10,7 @@ import java.time.Instant;
 public class Employee {
     @Id
     private String id;
+    @Indexed(unique = true)
     private String name;
     private String designation;
     @Indexed(unique = true)

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.time.Instant;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -92,7 +93,7 @@ class EmployeeControllerTest {
         void shouldReturnEmployee() throws Exception {
             Employee employee = new Employee(
                     "John Doe", "Engineer", "sh1234abcd",
-                    new BigDecimal("85000"), "2026-09-18T12:00:00.000Z", "2026-09-18T12:00:00.000Z");
+                    new BigDecimal("85000"), Instant.parse("2026-09-18T12:00:00.000Z"), Instant.parse("2026-09-18T12:00:00.000Z"));
 
             when(employeeService.getEmployeeById("sh1234abcd")).thenReturn(employee);
 
