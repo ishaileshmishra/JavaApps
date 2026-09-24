@@ -38,7 +38,8 @@ public class User {
 
     private Instant updatedAt;
 
-    public User(String username, String email, String password, Set<String> roles, Instant createdAt, Instant updatedAt) {
+    public User(String username, String email, String password, Set<String> roles, Instant createdAt,
+            Instant updatedAt) {
         this.username = username;
         this.email = email;
         this.password = password;

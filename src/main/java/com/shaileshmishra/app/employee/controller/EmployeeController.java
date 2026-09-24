@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +46,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDTO> createEmployee(
             @Valid @RequestBody EmployeeRequestDTO request) {
         return ResponseEntity
@@ -53,7 +55,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{empId}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @PathVariable String empId,
             @Valid @RequestBody EmployeeRequestDTO request) {
@@ -61,8 +63,8 @@ public class EmployeeController {
                 this.employeeService.updateEmployee(empId, request));
     }
 
-    @org.springframework.web.bind.annotation.PatchMapping("/{empId}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{empId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDTO> patchEmployee(
             @PathVariable String empId,
             @Valid @RequestBody com.shaileshmishra.app.employee.dto.EmployeePatchRequestDTO request) {
@@ -71,7 +73,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{empId}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteEmployee(
             @PathVariable String empId) {
         var response = this.employeeService.deleteEmployee(empId);

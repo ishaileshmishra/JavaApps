@@ -74,14 +74,13 @@ public class EmployeeService {
      * @return The response object containing the created employee details.
      */
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
-        // Normalize: trim whitespace so " John Doe " and "John Doe" are treated the
-        // same
         String normalizedName = request.getName().trim();
 
         if (employeeRepository.existsByNameIgnoreCaseAndDeletedAtIsNull(normalizedName)) {
             throw new EmployeeAlreadyExistsException(
                     "Employee with name '" + normalizedName + "' already exists.");
         }
+        // now
         var currentTimestamp = UtcTimestamp.nowAsInstant();
         // Store the trimmed name, not the raw request value
         var employee = new Employee(normalizedName, request.getDesignation(), EmployeeIdGenerator.generate(),

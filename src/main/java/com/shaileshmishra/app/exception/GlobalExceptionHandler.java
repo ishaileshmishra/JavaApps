@@ -1,10 +1,14 @@
 package com.shaileshmishra.app.exception;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -68,9 +72,9 @@ public class GlobalExceptionHandler {
                                 .body(errorBody);
         }
 
-        @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+        @ExceptionHandler(BadCredentialsException.class)
         public ResponseEntity<Map<String, Object>> handleBadCredentials(
-                        org.springframework.security.authentication.BadCredentialsException ex) {
+                        BadCredentialsException ex) {
 
                 Map<String, Object> errorBody = Map.of(
                                 "error_message", "Invalid username or password.",
@@ -81,17 +85,34 @@ public class GlobalExceptionHandler {
                                 .body(errorBody);
         }
 
-        @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
-        public ResponseEntity<Map<String, Object>> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException ex) {
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<Map<String, Object>> handleValidation(
+                        MethodArgumentNotValidException ex) {
                 Map<String, List<String>> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
-                                .collect(java.util.stream.Collectors.groupingBy(
+                                .collect(Collectors.groupingBy(
                                                 error -> error.getField() != null ? error.getField() : "unknown",
-                                                java.util.stream.Collectors.mapping(
-                                                                error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value",
-                                                                java.util.stream.Collectors.toList())));
-                
+                                                Collectors.mapping(
+                                                                error -> error.getDefaultMessage() != null
+                                                                                ? error.getDefaultMessage()
+                                                                                : "Invalid value",
+                                                                Collectors.toList())));
+
                 return ResponseEntity.badRequest().body(Map.of(
                                 "error_code", 400,
                                 "errors", fieldErrors));
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<Map<String, Object>> handleAccessDeniedException(
+                        AccessDeniedException ex) {
+
+                Map<String, Object> errorBody = Map.of(
+                                "error_message", "You do not have permission to access this resource.",
+                                "error_code", 403,
+                                "errors", Map.of("role", List.of("Access denied")));
+
+                return ResponseEntity
+                                .status(HttpStatus.FORBIDDEN)
+                                .body(errorBody);
         }
 }
