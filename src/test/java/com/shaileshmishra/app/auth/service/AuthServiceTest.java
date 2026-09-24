@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.time.Instant;
 
@@ -56,7 +55,8 @@ class AuthServiceTest {
     void setUp() {
         registerRequest = new RegisterRequestDTO("testuser", "test@example.com", "password123");
         loginRequest = new LoginRequestDTO("testuser", "password123");
-        user = new User("1", "testuser", "test@example.com", "encodedPassword", Set.of("USER"), Instant.now(), Instant.now());
+        user = new User("1", "testuser", "test@example.com", "encodedPassword", Set.of("USER"), Instant.now(),
+                Instant.now());
     }
 
     @Test
@@ -91,8 +91,9 @@ class AuthServiceTest {
     @DisplayName("should login user successfully and return JWT token")
     void shouldLoginUser_whenCredentialsAreValid() {
         Authentication authentication = mock(Authentication.class);
-        org.springframework.security.core.userdetails.User mockUserDetails = 
-            new org.springframework.security.core.userdetails.User("testuser", "password", java.util.Set.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER")));
+        org.springframework.security.core.userdetails.User mockUserDetails = new org.springframework.security.core.userdetails.User(
+                "testuser", "password",
+                java.util.Set.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER")));
         when(authentication.getPrincipal()).thenReturn(mockUserDetails);
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -110,4 +111,3 @@ class AuthServiceTest {
         assertEquals(86400000L, response.getExpiresInMs());
     }
 }
-
