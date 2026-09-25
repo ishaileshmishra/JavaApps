@@ -70,4 +70,3 @@ public class RegisterRequestDTO {
         this.roles = roles;
     }
 }
-
